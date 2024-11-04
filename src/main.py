@@ -133,10 +133,10 @@ class SteamGifts:
                         log(txt, "green")
                         sleep(randint(3, 7))
 
-            if self.default_page == 1:
-                n += 1
+            if self.is_default_page_set:
+                n = self.default_page
             else:
-                n = self.default_page  # Mantener la página constante
+                n += 1
 
 
         log("🛋️  List of games is ended. Waiting 40 secs to update...", "yellow")
