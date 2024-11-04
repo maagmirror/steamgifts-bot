@@ -67,8 +67,8 @@ def ask(type, name, message, validate=None, choices=[]):
             return {name: True}  # Valor predeterminado para confirmaciones
         elif type == 'input':
             if name == 'min_points':
-                return {name: '50'}  # Valor predeterminado numérico para min_points
-            return {name: 'default_value'}  # Reemplaza con valores que tengan sentido
+                return {name: '20'}  # Valor numérico predeterminado como entero
+            return {name: 'default_value'}
         elif type == 'list':
             return {name: choices[0]}  # Seleccionar la primera opción por defecto
 
