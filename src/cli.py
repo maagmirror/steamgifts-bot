@@ -61,18 +61,15 @@ class PointValidator(Validator):
 
 
 def ask(type, name, message, validate=None, choices=[]):
-    # Si estamos en un entorno Docker, devolver valores predeterminados
     if os.getenv("DOCKER_ENV", "false").lower() == "true":
         if type == 'confirm':
-            return {name: True}  # Valor predeterminado para confirmaciones
+            return {name: True}
         elif type == 'input':
             if name == 'min_points':
-                return {name: '20'}  # Valor numérico predeterminado como entero
+                return {name: '1'}
             return {name: 'default_value'}
         elif type == 'list':
-            return {name: choices[0]}  # Seleccionar la primera opción por defecto
-
-    # Si no estamos en Docker, usar PyInquirer para preguntas interactivas
+            return {name: choices[0]}
     questions = [
         {
             'type': type,
