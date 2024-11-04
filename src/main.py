@@ -3,6 +3,7 @@ import configparser
 import requests
 import json
 import threading
+import os
 
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
@@ -10,6 +11,7 @@ from time import sleep
 from random import randint
 from requests import RequestException
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
 from cli import log
 
@@ -22,6 +24,15 @@ class SteamGifts:
         self.gifts_type = gifts_type
         self.pinned = pinned
         self.min_points = int(min_points)
+        
+        try:
+            self.default_page = int(os.getenv("DEFAULT_PAGE", 1))
+            if self.default_page < 1:
+                log("⚠️  DEFAULT_PAGE debe ser un número mayor o igual a 1. Usando página 1 como predeterminado.", "yellow")
+                self.default_page = 1
+        except ValueError:
+            log("⚠️  DEFAULT_PAGE no es un número válido. Usando página 1 como predeterminado.", "yellow")
+            self.default_page = 1
 
         self.base = "https://www.steamgifts.com"
         self.session = requests.Session()
@@ -70,8 +81,8 @@ class SteamGifts:
             sleep(10)
             exit()
 
-    def get_game_content(self, page=1):
-        n = page
+    def get_game_content(self, page=None):
+        n = page if page else self.default_page
         while True:
             txt = "⚙️  Retrieving games from %d page." % n
             log(txt, "magenta")
@@ -122,7 +133,10 @@ class SteamGifts:
                         log(txt, "green")
                         sleep(randint(3, 7))
 
-            n = n+1
+            if self.default_page == 1:
+                n += 1
+            else:
+                n = self.default_page  # Mantener la página constante
 
 
         log("🛋️  List of games is ended. Waiting 40 secs to update...", "yellow")

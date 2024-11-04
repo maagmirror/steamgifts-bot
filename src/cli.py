@@ -100,7 +100,7 @@ def run():
 
     log("SteamGifts Bot", color="blue", figlet=True)
     log("Welcome to SteamGifts Bot!", "green")
-    log("Created by: github.com/stilManiac", "white")
+    log("Modified by: github.com/maagmirror", "white")
 
     config.read('config.ini')
 
@@ -109,8 +109,8 @@ def run():
         cookie = PHPSESSID
     elif config['DEFAULT'].get('cookie'):
         re_enter_cookie = ask(type='confirm',
-                            name='reenter',
-                            message='Do you want to enter a new cookie?')['reenter']
+            name='reenter',
+            message='Do you want to enter a new cookie?')['reenter']
         if re_enter_cookie:
             cookie = askCookie()
         else:
