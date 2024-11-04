@@ -145,6 +145,7 @@ class SteamGifts:
 
             if self.is_default_page_set:
                 n = self.default_page
+            else:
                 n += 1
 
         log("🛋️  List of games is ended. Waiting 2 minutes to update...", "yellow")
