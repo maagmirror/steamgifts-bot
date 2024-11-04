@@ -86,7 +86,7 @@ class SteamGifts:
             exit()
 
     def get_game_content(self, page=None):
-        n = page if page else self.default_page  # Iniciar en la página predeterminada o la especificada
+        n = page if page else self.default_page
         while True:
             txt = "⚙️  Retrieving games from page %d." % n
             log(txt, "magenta")
@@ -103,6 +103,12 @@ class SteamGifts:
                 exit()
 
             for item in game_list:
+                if 'is-faded' in item.get('class', []):
+                    game_name = item.find('a', {'class': 'giveaway__heading__name'}).text
+                    txt = f"🔄 Already entered: {game_name}"
+                    log(txt, "yellow")
+                    continue
+
                 if len(item.get('class', [])) == 2 and not self.pinned:
                     continue
 
@@ -127,18 +133,18 @@ class SteamGifts:
                     log(txt, "red")
                     continue
 
-                elif self.points - int(game_cost) >= 0:
-                    game_id = item.find('a', {'class': 'giveaway__heading__name'})['href'].split('/')[2]
-                    res = self.entry_gift(game_id)
-                    if res:
-                        self.points -= int(game_cost)
-                        txt = f"🎉 One more game! Has just entered {game_name}"
-                        log(txt, "green")
-                        sleep(randint(3, 7))
+                game_id = item.find('a', {'class': 'giveaway__heading__name'})['href'].split('/')[2]
+                res = self.entry_gift(game_id)
+                if res:
+                    self.points -= int(game_cost)
+                    txt = f"🎉 One more game! Has just entered {game_name}"
+                    log(txt, "green")
+                    sleep(randint(3, 7))
+
+            self.update_info()
 
             if self.is_default_page_set:
                 n = self.default_page
-            else:
                 n += 1
 
         log("🛋️  List of games is ended. Waiting 2 minutes to update...", "yellow")
