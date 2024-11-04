@@ -125,8 +125,8 @@ class SteamGifts:
             n = n+1
 
 
-        log("🛋️  List of games is ended. Waiting 2 mins to update...", "yellow")
-        sleep(120)
+        log("🛋️  List of games is ended. Waiting 40 secs to update...", "yellow")
+        sleep(40)
         self.start()
 
     def entry_gift(self, game_id):
