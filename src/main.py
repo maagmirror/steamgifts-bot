@@ -26,14 +26,10 @@ class SteamGifts:
         self.pinned = pinned
         self.min_points = int(min_points)
         
-        try:
-            self.default_page = int(os.getenv("DEFAULT_PAGE", 1))
-            if self.default_page < 1:
-                log("⚠️  DEFAULT_PAGE debe ser un número mayor o igual a 1. Usando página 1 como predeterminado.", "yellow")
-                self.default_page = 1
-        except ValueError:
-            log("⚠️  DEFAULT_PAGE no es un número válido. Usando página 1 como predeterminado.", "yellow")
-            self.default_page = 1
+        # Verifica si DEFAULT_PAGE está configurado en el entorno
+        default_page_env = os.getenv("DEFAULT_PAGE")
+        self.default_page = int(default_page_env) if default_page_env is not None else 1
+        self.is_default_page_set = default_page_env is not None  # True si está en el entorno
 
         self.base = "https://www.steamgifts.com"
         self.session = requests.Session()
@@ -83,19 +79,18 @@ class SteamGifts:
             exit()
 
     def get_game_content(self, page=None):
-        n = page if page else self.default_page
+        n = page if page else self.default_page  # Iniciar en la página predeterminada o la especificada
         while True:
-            txt = "⚙️  Retrieving games from %d page." % n
+            txt = "⚙️  Retrieving games from page %d." % n
             log(txt, "magenta")
 
             filtered_url = self.filter_url[self.gifts_type] % n
             paginated_url = f"{self.base}/giveaways/{filtered_url}"
 
             soup = self.get_soup_from_page(paginated_url)
-
             game_list = soup.find_all('div', {'class': 'giveaway__row-inner-wrap'})
 
-            if not len(game_list):
+            if not game_list:
                 log("⛔  Page is empty. Please, select another type.", "red")
                 sleep(10)
                 exit()
@@ -138,7 +133,6 @@ class SteamGifts:
                 n = self.default_page
             else:
                 n += 1
-
 
         log("🛋️  List of games is ended. Waiting 40 secs to update...", "yellow")
         sleep(40)
