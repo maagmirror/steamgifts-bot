@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 
 from cli import log
 
+load_dotenv()
 
 class SteamGifts:
     def __init__(self, cookie, gifts_type, pinned, min_points):
