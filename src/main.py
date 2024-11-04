@@ -72,7 +72,14 @@ class SteamGifts:
 
         try:
             self.xsrf_token = soup.find('input', {'name': 'xsrf_token'})['value']
-            self.points = int(soup.find('span', {'class': 'nav__points'}).text)  # storage points
+            
+            points_element = soup.find('span', {'class': 'nav__points'})
+            if points_element and points_element.text.isdigit():
+                self.points = int(points_element.text)
+                log(f"🔄 Points updated: {self.points}", "blue")
+            else:
+                log("⚠️  Unable to find or parse points. Setting points to 0.", "yellow")
+                self.points = 0
         except TypeError:
             log("⛔  Cookie is not valid.", "red")
             sleep(10)
