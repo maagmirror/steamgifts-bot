@@ -1,6 +1,14 @@
 import six
 import configparser
 import re
+import os
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Obtiene la cookie desde la variable de entorno
+PHPSESSID = os.getenv("PHPSESSID")
 
 from pyfiglet import figlet_format
 from pyconfigstore import ConfigStore
@@ -45,10 +53,10 @@ class PointValidator(Validator):
         try:
             value = int(value)
         except Exception:
-            raise ValidationError(message = 'Value should be greater than 0', cursor_position = len(document.text))
+            raise ValidationError(message='Value should be greater than 0', cursor_position=len(document.text))
 
         if value <= 0:
-            raise ValidationError(message = 'Value should be greater than 0', cursor_position = len(document.text))
+            raise ValidationError(message='Value should be greater than 0', cursor_position=len(document.text))
         return True
 
 
@@ -87,16 +95,20 @@ def run():
     log("Created by: github.com/stilManiac", "white")
 
     config.read('config.ini')
-    if not config['DEFAULT'].get('cookie'):
-        cookie = askCookie()
-    else:
+
+    # Usar cookie desde .env o config.ini
+    if PHPSESSID:
+        cookie = PHPSESSID
+    elif config['DEFAULT'].get('cookie'):
         re_enter_cookie = ask(type='confirm',
                             name='reenter',
-                            message='Do you want to enter new cookie?')['reenter']
+                            message='Do you want to enter a new cookie?')['reenter']
         if re_enter_cookie:
             cookie = askCookie()
         else:
             cookie = config['DEFAULT'].get('cookie')
+    else:
+        cookie = askCookie()
 
     pinned_games = ask(type='confirm',
                        name='pinned',
