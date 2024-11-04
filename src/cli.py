@@ -66,10 +66,12 @@ def ask(type, name, message, validate=None, choices=[]):
         if type == 'confirm':
             return {name: True}  # Valor predeterminado para confirmaciones
         elif type == 'input':
+            if name == 'min_points':
+                return {name: '50'}  # Valor predeterminado numérico para min_points
             return {name: 'default_value'}  # Reemplaza con valores que tengan sentido
         elif type == 'list':
             return {name: choices[0]}  # Seleccionar la primera opción por defecto
-    
+
     # Si no estamos en Docker, usar PyInquirer para preguntas interactivas
     questions = [
         {
@@ -85,7 +87,6 @@ def ask(type, name, message, validate=None, choices=[]):
         })
     answers = prompt(questions, style=style)
     return answers
-
 
 def run():
     from main import SteamGifts as SG
