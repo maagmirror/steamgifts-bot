@@ -26,13 +26,17 @@ class SteamGifts:
         self.pinned = pinned
         self.min_points = int(min_points)
         
-        # Verifica si DEFAULT_PAGE está configurado en el entorno
         default_page_env = os.getenv("DEFAULT_PAGE")
         self.default_page = int(default_page_env) if default_page_env is not None else 1
-        self.is_default_page_set = default_page_env is not None  # True si está en el entorno
+        self.is_default_page_set = default_page_env is not None
 
         self.base = "https://www.steamgifts.com"
         self.session = requests.Session()
+
+        self.session.headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0',
+            'Origin': 'https://www.steamgifts.com',
+        }
 
         self.filter_url = {
             'All': "search?page=%d",
