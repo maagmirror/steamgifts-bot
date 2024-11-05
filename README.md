@@ -12,7 +12,7 @@ The bot is specially designed for [SteamGifts.com](https://www.steamgifts.com/)
 - Сonfigurable.
 - Sleeps to restock the points.
 - Can run 24/7.
-  Added by Maag
+  -- Added by Maag:
 - Can use with docker
 - Log for already join giveaways
 - If you put variable DEFAULT_PAGE=1 in env, the bot only repeat the first page
