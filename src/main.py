@@ -95,7 +95,7 @@ class SteamGifts:
             sleep(10)
             exit()
 
-        def get_game_content(self, page=None):
+    def get_game_content(self, page=None):
         n = page if page else self.default_page
         while True:
             txt = f"⚙️  Retrieving games from page {n}."
@@ -161,7 +161,7 @@ class SteamGifts:
                     log(txt, "green")
                     sleep(randint(3, 7))
 
-                games_processed += 1  # Incrementar el contador de juegos procesados
+                games_processed += 1
 
             self.update_info()
 
