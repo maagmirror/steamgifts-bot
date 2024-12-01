@@ -26,9 +26,15 @@ class SteamGifts:
         self.pinned = pinned
         self.min_points = int(min_points)
         
+        # Leer DEFAULT_PAGE
         default_page_env = os.getenv("DEFAULT_PAGE")
         self.default_page = int(default_page_env) if default_page_env is not None else 1
         self.is_default_page_set = default_page_env is not None
+
+        # Leer MAX_GAMES
+        max_games_env = os.getenv("MAX_GAMES")
+        self.max_games = int(max_games_env) if max_games_env and max_games_env.isdigit() else None
+
 
         self.base = "https://www.steamgifts.com"
         self.session = requests.Session()
@@ -89,10 +95,10 @@ class SteamGifts:
             sleep(10)
             exit()
 
-    def get_game_content(self, page=None):
+        def get_game_content(self, page=None):
         n = page if page else self.default_page
         while True:
-            txt = "⚙️  Retrieving games from page %d." % n
+            txt = f"⚙️  Retrieving games from page {n}."
             log(txt, "magenta")
 
             filtered_url = self.filter_url[self.gifts_type] % n
@@ -106,14 +112,22 @@ class SteamGifts:
                 sleep(10)
                 exit()
 
+            games_processed = 0
+
             for item in game_list:
+                if self.max_games and games_processed >= self.max_games:
+                    log(f"✅ Processed {games_processed} games as per MAX_GAMES limit.", "cyan")
+                    break
+
                 if 'is-faded' in item.get('class', []):
                     game_name = item.find('a', {'class': 'giveaway__heading__name'}).text
                     txt = f"🔄 Already entered: {game_name}"
                     log(txt, "yellow")
+                    games_processed += 1
                     continue
 
                 if len(item.get('class', [])) == 2 and not self.pinned:
+                    games_processed += 1
                     continue
 
                 if self.points == 0 or self.points < self.min_points:
@@ -128,6 +142,7 @@ class SteamGifts:
                 if game_cost:
                     game_cost = game_cost.getText().replace('(', '').replace(')', '').replace('P', '')
                 else:
+                    games_processed += 1
                     continue
 
                 game_name = item.find('a', {'class': 'giveaway__heading__name'}).text
@@ -135,6 +150,7 @@ class SteamGifts:
                 if self.points - int(game_cost) < 0:
                     txt = f"⛔ Not enough points to enter: {game_name}"
                     log(txt, "red")
+                    games_processed += 1
                     continue
 
                 game_id = item.find('a', {'class': 'giveaway__heading__name'})['href'].split('/')[2]
@@ -145,6 +161,8 @@ class SteamGifts:
                     log(txt, "green")
                     sleep(randint(3, 7))
 
+                games_processed += 1  # Incrementar el contador de juegos procesados
+
             self.update_info()
 
             if self.is_default_page_set:
@@ -152,7 +170,7 @@ class SteamGifts:
             else:
                 n += 1
 
-            log("⏳ List of games is ended. Waiting 2 minutes to update...", "yellow")
+            log("⏳ Waiting 2 minutes before restarting...", "yellow")
             sleep(120)
             self.start()
 
